@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f4f0e8;--bg2:#ede8dd;--bg3:#e5dfd2;
+  --ink:#1c1a15;--ink2:#3d3a30;--ink3:#6b6657;
+  --green:#2d5a3d;--green2:#3d7a52;--green3:#d4e8da;
+  --brass:#b5872a;--brass2:#d4a03a;--brass3:#f5e8c8;
+  --red:#8b2a2a;--red3:#f5dada;--white:#fdfcf8;
+  --shadow:0 2px 16px rgba(28,26,21,0.10);--shadow2:0 4px 32px rgba(28,26,21,0.14);
+}
+
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b5872a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+#app{position:relative;z-index:1;display:flex;min-height:100vh}
+
+.sidebar{width:240px;flex-shrink:0;background:var(--green);min-height:100vh;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.logo-word{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:0.01em;line-height:1}
+.logo-sub{font-size:0.7rem;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;margin-top:3px}
+.school-tag{margin:12px 24px;background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 12px;font-size:0.75rem;color:rgba(255,255,255,0.6);border-left:3px solid var(--brass2);line-height:1.4}
+.school-tag strong{display:block;color:rgba(255,255,255,0.9);font-weight:500;font-size:0.78rem}
+.nav{flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,0.65);font-size:0.83rem;font-weight:400;transition:all 0.18s;border:none;background:none;width:100%;text-align:left;font-family:'Outfit',sans-serif}
+.nav-item:hover{background:rgba(255,255,255,0.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,0.15);color:#fff;font-weight:500}
+.nav-item .icon{width:20px;text-align:center;font-size:1rem;opacity:0.8}
+.nav-badge{margin-left:auto;background:var(--brass2);color:var(--green);font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:10px;min-width:20px;text-align:center}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,0.1)}
+
+.main{flex:1;padding:36px 40px;overflow-y:auto;max-height:100vh}
+.page{display:none;animation:fadeUp 0.3s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.page-head{margin-bottom:32px}
+.page-eyebrow{font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--brass);margin-bottom:6px}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--ink);line-height:1.1}
+.page-title em{color:var(--green);font-style:italic}
+.page-sub{font-size:0.85rem;color:var(--ink3);margin-top:6px}
+.page-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:7px;font-size:0.82rem;font-weight:500;cursor:pointer;border:none;transition:all 0.2s;font-family:'Outfit',sans-serif;letter-spacing:0.01em}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green2);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn-brass{background:var(--brass);color:#fff}
+.btn-brass:hover{background:var(--brass2);transform:translateY(-1px)}
+.btn-outline{background:none;border:1.5px solid var(--bg3);color:var(--ink2)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-red{background:var(--red3);border:1.5px solid rgba(139,42,42,0.25);color:var(--red)}
+.btn-red:hover{background:#edc8c8}
+.btn-success{background:var(--green3);border:1.5px solid rgba(45,90,61,0.25);color:var(--green)}
+.btn-success:hover{background:#c0deca}
+.btn-sm{padding:6px 13px;font-size:0.76rem}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+.card{background:var(--white);border:1px solid var(--bg3);border-radius:12px;padding:24px;box-shadow:var(--shadow);transition:all 0.2s}
+.card:hover{box-shadow:var(--shadow2);transform:translateY(-1px)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:900px){.grid-3{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+.stat-card{background:var(--white);border:1px solid var(--bg3);border-radius:12px;padding:20px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--brass2))}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;color:var(--green);line-height:1}
+.stat-label{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-top:4px}
+.stat-sub{font-size:0.78rem;color:var(--ink3);margin-top:2px}
+
+.club-card{background:var(--white);border:1px solid var(--bg3);border-radius:12px;padding:0;overflow:hidden;box-shadow:var(--shadow);transition:all 0.2s;cursor:pointer}
+.club-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px)}
+.club-card-banner{height:6px;background:linear-gradient(90deg,var(--green),var(--brass2))}
+.club-card-body{padding:20px}
+.club-card-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.club-card-meta{font-size:0.78rem;color:var(--ink3);margin-bottom:14px;line-height:1.5}
+.club-card-row{display:flex;gap:16px;margin-bottom:14px}
+.club-mini-stat{text-align:center}
+.club-mini-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--brass);line-height:1}
+.club-mini-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink3)}
+
+.row-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;border:1px solid var(--bg3);background:var(--white);margin-bottom:8px;transition:background 0.15s}
+.row-item:hover{background:var(--bg2)}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--green3),var(--green));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--green);flex-shrink:0}
+.row-info{flex:1;min-width:0}
+.row-name{font-size:0.9rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:0.75rem;color:var(--ink3)}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;letter-spacing:0.04em}
+.badge-officer{background:var(--brass3);color:var(--brass);border:1px solid rgba(181,135,42,0.25)}
+.badge-member{background:var(--bg3);color:var(--ink3);border:1px solid var(--bg3)}
+.badge-pending{background:#fff8e6;color:#a07020;border:1px solid rgba(160,112,32,0.2)}
+.badge-approved{background:var(--green3);color:var(--green);border:1px solid rgba(45,90,61,0.2)}
+.badge-denied{background:var(--red3);color:var(--red);border:1px solid rgba(139,42,42,0.2)}
+.badge-strike{background:var(--red3);color:var(--red);border:1px solid rgba(139,42,42,0.2)}
+
+.section-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--bg3)}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:500px){.form-grid{grid-template-columns:1fr}}
+.form-group{margin-bottom:16px}
+.form-group:last-child{margin-bottom:0}
+label{display:block;font-size:0.72rem;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+input,textarea,select{width:100%;padding:10px 13px;border-radius:7px;background:var(--bg);border:1.5px solid var(--bg3);color:var(--ink);font-family:'Outfit',sans-serif;font-size:0.88rem;transition:border-color 0.2s;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--green);background:var(--white)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--bg)}
+
+/* password input shake animation */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake 0.35s ease}
+
+.overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(28,26,21,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:var(--white);border:1px solid var(--bg3);border-radius:16px;padding:32px;width:500px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow2);animation:modalIn 0.22s ease;position:relative}
+@keyframes modalIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;font-size:1.3rem;color:var(--ink3);line-height:1;padding:4px 8px;border-radius:6px}
+.modal-close:hover{background:var(--bg2);color:var(--ink)}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.modal-sub{font-size:0.82rem;color:var(--ink3);margin-bottom:22px}
+
+.req-card{background:var(--white);border:1px solid var(--bg3);border-radius:10px;padding:18px;margin-bottom:12px;transition:border-color 0.2s}
+.req-card:hover{border-color:rgba(45,90,61,0.3)}
+.req-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.req-card-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--ink)}
+.req-card-meta{font-size:0.75rem;color:var(--ink3);margin-bottom:6px}
+.req-card-desc{font-size:0.82rem;color:var(--ink2);line-height:1.55;margin-bottom:10px}
+.req-card-reason{font-size:0.79rem;color:var(--ink3);font-style:italic;border-left:3px solid var(--bg3);padding-left:10px;margin-bottom:12px;line-height:1.5}
+
+.fund-card{background:var(--bg);border:1px solid var(--bg3);border-radius:8px;padding:14px 16px;margin-bottom:8px}
+.fund-name{font-weight:600;font-size:0.9rem;color:var(--ink);margin-bottom:2px}
+.fund-meta{font-size:0.76rem;color:var(--ink3)}
+
+/* ── LOGIN ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;z-index:1}
+.login-box{background:var(--white);border:1px solid var(--bg3);border-radius:16px;padding:44px 40px;width:420px;max-width:94vw;box-shadow:var(--shadow2);text-align:center}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--green);margin-bottom:4px}
+.login-tagline{font-size:0.78rem;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:28px}
+.school-option{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1.5px solid var(--bg3);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all 0.18s;font-size:0.9rem;font-weight:500;color:var(--ink);background:none;width:100%;font-family:'Outfit',sans-serif;text-align:left}
+.school-option:hover{border-color:var(--green);color:var(--green);background:var(--green3)}
+.back-link{background:none;border:none;font-size:0.8rem;color:var(--ink3);cursor:pointer;margin-top:14px;display:inline-flex;align-items:center;gap:5px;font-family:'Outfit',sans-serif;padding:0}
+.back-link:hover{color:var(--green)}
+.login-step{animation:fadeUp 0.25s ease}
+
+/* password hint box */
+.pw-hint{background:var(--brass3);border:1px solid rgba(181,135,42,0.25);border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--brass);margin-bottom:16px;text-align:left;line-height:1.5}
+.pw-hint strong{display:block;margin-bottom:2px;color:var(--ink2)}
+
+/* create account link */
+.create-account-link{margin-top:18px;padding-top:14px;border-top:1px solid var(--bg3);font-size:0.78rem;color:var(--ink3);text-align:center}
+.create-account-link button{background:none;border:none;color:var(--green);font-size:0.78rem;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;text-decoration:underline;padding:0}
+.create-account-link button:hover{color:var(--green2)}
+.signup-role-chip{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1.5px solid var(--bg3);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all 0.18s;font-size:0.88rem;font-weight:500;color:var(--ink);background:none;width:100%;font-family:'Outfit',sans-serif}
+.signup-role-chip:hover{border-color:var(--green);color:var(--green);background:var(--green3)}
+.signup-role-chip .chip-desc{font-size:0.72rem;color:var(--ink3);margin-left:auto;font-weight:400}
+.success-box{background:var(--green3);border:1px solid rgba(45,90,61,0.2);border-radius:8px;padding:14px 16px;font-size:0.82rem;color:var(--green);text-align:center;margin-bottom:16px;line-height:1.5}
+.success-box .success-icon{font-size:1.6rem;margin-bottom:6px;display:block}
+
+.divider{height:1px;background:var(--bg3);margin:24px 0}
+.empty{text-align:center;padding:48px 24px}
+.empty-icon{font-size:2.8rem;margin-bottom:12px;opacity:0.35}
+.empty-text{font-size:0.88rem;color:var(--ink3)}
+
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:13px 20px;border-radius:9px;background:var(--ink);color:#fff;font-size:0.84rem;transform:translateY(70px);opacity:0;transition:all 0.28s;max-width:300px;box-shadow:var(--shadow2)}
+#toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-logo">ClubTrackr</div>
+      <div class="login-tagline">Student Club Management System</div>
+
+      <!-- Step 1: School -->
+      <div id="step-school" class="login-step">
+        <div class="section-title" style="font-size:0.8rem;margin-bottom:14px;">Select Your School</div>
+        <button class="school-option" onclick="selectSchool(0)">Mission San Jose High School <span>→</span></button>
+        <button class="school-option" onclick="selectSchool(1)">Washington High School <span>→</span></button>
+      </div>
+
+      <!-- Step 2: Role -->
+      <div id="step-role" class="login-step" style="display:none">
+        <div class="section-title" style="font-size:0.8rem;margin-bottom:14px;">I am a...</div>
+        <button class="school-option" onclick="selectRole('member')">👤 Student Member <span>→</span></button>
+        <button class="school-option" onclick="selectRole('officer')">⭐ Club Officer <span>→</span></button>
+        <button class="school-option" onclick="selectRole('admin')">🛡️ Administrator <span>→</span></button>
+        <button class="back-link" onclick="backToSchool()">← Back</button>
+        <div class="create-account-link">New here? <button onclick="showCreateAccount()">Create an account →</button></div>
+      </div>
+
+      <!-- Step 3: Name -->
+      <div id="step-login" class="login-step" style="display:none">
+        <div class="form-group"><label>First Name</label><input id="li-first" type="text" placeholder="e.g. Yashika"></div>
+        <div class="form-group"><label>Last Name</label><input id="li-last" type="text" placeholder="e.g. Hegde"></div>
+        <button class="btn btn-green" style="width:100%;justify-content:center" onclick="doNameCheck()">Continue →</button>
+        <div id="login-err" style="color:var(--red);font-size:0.78rem;margin-top:10px;min-height:18px;text-align:center"></div>
+        <button class="back-link" onclick="backToRole()">← Back</button>
+      </div>
+
+      <!-- Step 4: Password (officer = club pw, admin = account pw) -->
+      <div id="step-password" class="login-step" style="display:none">
+        <div id="pw-context-hint" class="pw-hint"></div>
+        <div class="form-group"><label id="pw-label">Password</label><input id="li-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doPasswordCheck()"></div>
+        <button class="btn btn-green" style="width:100%;justify-content:center" onclick="doPasswordCheck()">Sign In</button>
+        <div id="pw-err" style="color:var(--red);font-size:0.78rem;margin-top:10px;min-height:18px;text-align:center"></div>
+        <button class="back-link" onclick="backToName()">← Back</button>
+      </div>
+
+      <!-- ── CREATE ACCOUNT FLOW ── -->
+
+      <!-- CA Step 1: Choose account type -->
+      <div id="step-ca-type" class="login-step" style="display:none">
+        <div class="section-title" style="font-size:0.8rem;margin-bottom:14px;">Create Account As...</div>
+        <button class="signup-role-chip" onclick="selectSignupRole('member')">👤 Student Member <span class="chip-desc">Join clubs as a member</span></button>
+        <button class="signup-role-chip" onclick="selectSignupRole('officer')">⭐ Club Officer <span class="chip-desc">Manage a club you lead</span></button>
+        <button class="back-link" onclick="showStep('step-role')">← Back</button>
+      </div>
+
+      <!-- CA Step 2: Enter name + grade -->
+      <div id="step-ca-info" class="login-step" style="display:none">
+        <div id="ca-role-banner" class="pw-hint" style="margin-bottom:16px"></div>
+        <div class="form-group"><label>First Name</label><input id="ca-first" type="text" placeholder="e.g. Yashika"></div>
+        <div class="form-group"><label>Last Name</label><input id="ca-last" type="text" placeholder="e.g. Hegde"></div>
+        <div class="form-group"><label>Grade</label>
+          <select id="ca-grade"><option value="9">9th Grade</option><option value="10">10th Grade</option><option value="11" selected>11th Grade</option><option value="12">12th Grade</option></select>
+        </div>
+        <button class="btn btn-green" style="width:100%;justify-content:center;margin-top:4px" onclick="doCreateAccountInfo()">Continue →</button>
+        <div id="ca-err" style="color:var(--red);font-size:0.78rem;margin-top:10px;min-height:18px;text-align:center"></div>
+        <button class="back-link" onclick="showStep('step-ca-type')">← Back</button>
+      </div>
+
+      <!-- CA Step 3 (officer only): Pick club + verify club password -->
+      <div id="step-ca-club" class="login-step" style="display:none">
+        <div class="pw-hint" style="margin-bottom:16px"><strong>⭐ Join as Officer</strong>Select your club and enter its password to verify you're an officer.</div>
+        <div class="form-group"><label>Your Club</label>
+          <select id="ca-club-select"></select>
+        </div>
+        <div class="form-group"><label>Club Password</label><input id="ca-club-pw" type="password" placeholder="Enter club password" onkeydown="if(event.key==='Enter')doCreateOfficerAccount()"></div>
+        <button class="btn btn-brass" style="width:100%;justify-content:center;margin-top:4px" onclick="doCreateOfficerAccount()">Create Officer Account</button>
+        <div id="ca-club-err" style="color:var(--red);font-size:0.78rem;margin-top:10px;min-height:18px;text-align:center"></div>
+        <button class="back-link" onclick="showStep('step-ca-info')">← Back</button>
+      </div>
+
+      <!-- CA Step 4: Success -->
+      <div id="step-ca-success" class="login-step" style="display:none">
+        <div class="success-box"><span class="success-icon">🎉</span><strong id="ca-success-msg">Account created!</strong><br><span id="ca-success-sub" style="font-size:0.78rem;color:var(--green2)"></span></div>
+        <button class="btn btn-green" style="width:100%;justify-content:center" onclick="doSignInAfterCreate()">Sign In Now →</button>
+        <button class="back-link" onclick="showStep('step-school')">← Start over</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="main-app" style="display:none">
+  <div id="app">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-word">ClubTrackr</div>
+        <div class="logo-sub">Management System</div>
+      </div>
+      <div class="school-tag" id="sidebar-school-tag"></div>
+      <nav class="nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px">Logged in as</div>
+        <div id="sidebar-user" style="color:rgba(255,255,255,0.85);font-size:0.82rem;font-weight:500;margin-bottom:10px"></div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:8px;display:flex;align-items:center;gap:5px">
+          <span style="width:6px;height:6px;border-radius:50%;background:#4caf82;display:inline-block"></span>Auto-saving enabled
+        </div>
+        <button class="btn btn-outline" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);font-size:0.76rem;padding:7px 12px;margin-bottom:6px" onclick="logout()">Sign Out</button>
+        <div id="admin-reset-btn" style="display:none">
+          <button class="btn btn-outline" style="color:rgba(255,100,100,0.6);border-color:rgba(255,100,100,0.2);font-size:0.7rem;padding:5px 10px;width:100%" onclick="resetToDefaults()">🗑 Reset All Data</button>
+        </div>
+      </div>
+    </aside>
+    <main class="main" id="main-content"></main>
+  </div>
+</div>
+
+<!-- ══ MODAL: Request New Club ══ -->
+<div class="overlay" id="modal-new-club">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-new-club')">✕</button>
+    <div class="modal-title">Request a New Club</div>
+    <div class="modal-sub">Submit your proposal — admin will review and approve</div>
+    <div class="form-group"><label>Club Name</label><input id="nc-name" placeholder="e.g. Photography Club"></div>
+    <div class="form-group"><label>Description</label><textarea id="nc-desc" placeholder="What is this club about?"></textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Meeting Room</label><input id="nc-room" placeholder="e.g. Room A4"></div>
+      <div class="form-group"><label>Meeting Day</label>
+        <select id="nc-day"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Frequency</label>
+        <select id="nc-freq"><option>weekly</option><option>biweekly</option><option>monthly</option></select>
+      </div>
+      <div class="form-group"><label>Meeting Time</label>
+        <select id="nc-time"><option>During Lunch</option><option>After School</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Club Password</label><input id="nc-pw" placeholder="Officers will use this"></div>
+    <div class="form-group"><label>Teacher Advisor</label><input id="nc-advisor" placeholder="e.g. Ms. Johnson (required)"></div>
+    <div class="form-group"><label>Advisor Email</label><input id="nc-advisor-email" type="email" placeholder="e.g. mjohnson@school.edu"></div>
+    <div class="form-group"><label>Vision / Reason</label><textarea id="nc-reason" placeholder="Why should this club exist?"></textarea></div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-green" onclick="submitClubRequest()">Submit Request</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-new-club')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Club Detail ══ -->
+<div class="overlay" id="modal-club-detail">
+  <div class="modal" style="width:560px">
+    <button class="modal-close" onclick="closeModal('modal-club-detail')">✕</button>
+    <div id="club-detail-body"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+//  DATA  (localStorage-persisted)
+// ═══════════════════════════════════════
+const STORAGE_KEY = 'clubtrackr_data_v1';
+
+const DEFAULT_DATA = {
+  schools: [
+    {
+      name: "Mission San Jose High School",
+      clubs: [
+        { id:1, name:"Chess Club", room:"Room B12", day:"Monday", freq:"weekly", password:"chess4ever", balance:500, strikes:0,
+          members:[{name:"Yashika Hegde",grade:11},{name:"Jordan Park",grade:10}],
+          officers:[{name:"Fiona Lee",grade:12}],
+          fundraisers:[{name:"Wingstop Sale",desc:"Boneless wings at the BTQ",date:"March 26, 2026",raised:200,expenses:100}]},
+        { id:2, name:"Art Club", room:"Room E3", day:"Wednesday", freq:"weekly", password:"123art", balance:300, strikes:1,
+          members:[{name:"Ishita Kothawade",grade:11}],
+          officers:[{name:"Aditi Sreeram",grade:11}],
+          fundraisers:[]}
+      ],
+      admins:[{name:"Mr Jan", password:"six7"}, {name:"Ms Smith", password:"admin22"}],
+      pendingFundraisers:[],
+      pendingClubs:[],
+      registeredMembers:[]
+    },
+    {
+      name: "Washington High School",
+      clubs: [
+        { id:3, name:"Math Club", room:"Room C12", day:"Tuesday", freq:"weekly", password:"pi3.14", balance:400, strikes:0,
+          members:[{name:"Ishita Kothawade",grade:11},{name:"Bill Board",grade:11}],
+          officers:[{name:"Carrie Oakie",grade:11}],
+          fundraisers:[{name:"Bundt Cakes",desc:"Mini red-velvet cakes at the horseshow",date:"March 9, 2026",raised:150,expenses:80}]},
+        { id:4, name:"Writer's Block", room:"Room B17", day:"Friday", freq:"biweekly", password:"supercalifragilistic", balance:800, strikes:0,
+          members:[{name:"Yashika Hegde",grade:11},{name:"Barry Cade",grade:9},{name:"Bill Board",grade:11}],
+          officers:[{name:"Rick O'Shea",grade:12}],
+          fundraisers:[]}
+      ],
+      admins:[{name:"Crystal Clear", password:"transparent07"}],
+      pendingFundraisers:[],
+      pendingClubs:[],
+      registeredMembers:[]
+    }
+  ]
+};
+
+// Load persisted data, falling back to defaults
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Ensure every school has the registeredMembers array (migration safety)
+      parsed.schools.forEach(s => { if (!s.registeredMembers) s.registeredMembers = []; });
+      return parsed;
+    }
+  } catch(e) { console.warn('ClubTrackr: failed to load saved data, using defaults.', e); }
+  return JSON.parse(JSON.stringify(DEFAULT_DATA)); // deep clone
+}
+
+// Save current DATA to localStorage — call after every mutation
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); }
+  catch(e) { console.warn('ClubTrackr: could not save data.', e); }
+}
+
+// Admin utility: wipe all saved data and reload (exposed in admin panel)
+function resetToDefaults() {
+  if (!confirm('Reset ALL data to factory defaults? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+const DATA = loadData();
+
+// ═══════════════════════════════════════
+//  SESSION STATE
+// ═══════════════════════════════════════
+let session = { schoolIdx:null, role:null, user:null, myClubIds:[], myRequests:[] };
+
+// Login flow temp state
+let _schoolIdx = null, _role = null, _foundUser = null, _foundClubs = [];
+
+// ═══════════════════════════════════════
+//  LOGIN STEPS
+// ═══════════════════════════════════════
+function showStep(id) {
+  ['step-school','step-role','step-login','step-password',
+   'step-ca-type','step-ca-info','step-ca-club','step-ca-success'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+
+function selectSchool(idx) { _schoolIdx = idx; showStep('step-role'); }
+function selectRole(role) { _role = role; showStep('step-login'); document.getElementById('login-err').textContent=''; }
+function backToSchool() { showStep('step-school'); }
+function backToRole()   { showStep('step-role'); }
+function backToName()   { showStep('step-login'); document.getElementById('pw-err').textContent=''; document.getElementById('li-pw').value=''; }
+
+function doNameCheck() {
+  const first = document.getElementById('li-first').value.trim();
+  const last  = document.getElementById('li-last').value.trim();
+  const err   = document.getElementById('login-err');
+  err.textContent = '';
+  if (!first || !last) { err.textContent = 'Please enter your full name.'; return; }
+
+  const school = DATA.schools[_schoolIdx];
+  const fullName = (first + ' ' + last).toLowerCase();
+
+  if (_role === 'member') {
+    let found = null, foundClubs = [];
+    school.clubs.forEach(c => c.members.forEach(m => {
+      if (m.name.toLowerCase() === fullName) { found = m; foundClubs.push(c.id); }
+    }));
+    // Also check registered members with no clubs yet
+    if (!found && school.registeredMembers) {
+      const reg = school.registeredMembers.find(m => m.name.toLowerCase() === fullName);
+      if (reg) { found = reg; foundClubs = []; }
+    }
+    if (!found) { err.textContent = 'Member not found. Check your name or create an account.'; return; }
+    // Members have no password — log straight in
+    _foundUser = found; _foundClubs = foundClubs;
+    launchApp(_schoolIdx, 'member', { name: found.name, grade: found.grade, clubs: foundClubs });
+
+  } else if (_role === 'officer') {
+    let found = null, foundClubs = [];
+    school.clubs.forEach(c => c.officers.forEach(o => {
+      if (o.name.toLowerCase() === fullName) { found = o; foundClubs.push(c.id); }
+    }));
+    if (!found) { err.textContent = 'Officer not found. Check your name.'; return; }
+    _foundUser = found; _foundClubs = foundClubs;
+    // Show club password step
+    const clubNames = school.clubs.filter(c => foundClubs.includes(c.id)).map(c => c.name).join(', ');
+    document.getElementById('pw-context-hint').innerHTML =
+      `<strong>🔒 Club Password Required</strong>Enter the password for your club${foundClubs.length > 1 ? 's' : ''}: <em>${clubNames}</em>.<br>All officers in a club share the same password.`;
+    document.getElementById('pw-label').textContent = 'Club Password';
+    document.getElementById('li-pw').value = '';
+    document.getElementById('pw-err').textContent = '';
+    showStep('step-password');
+
+  } else { // admin
+    const adm = school.admins.find(a => a.name.toLowerCase() === fullName);
+    if (!adm) { err.textContent = 'Administrator not found.'; return; }
+    _foundUser = adm; _foundClubs = [];
+    document.getElementById('pw-context-hint').innerHTML =
+      `<strong>🛡️ Admin Password Required</strong>Enter the password for your admin account: <em>${adm.name}</em>.`;
+    document.getElementById('pw-label').textContent = 'Admin Password';
+    document.getElementById('li-pw').value = '';
+    document.getElementById('pw-err').textContent = '';
+    showStep('step-password');
+  }
+}
+
+function doPasswordCheck() {
+  const pw  = document.getElementById('li-pw').value;
+  const err = document.getElementById('pw-err');
+  const inp = document.getElementById('li-pw');
+  err.textContent = '';
+
+  if (_role === 'officer') {
+    const school = DATA.schools[_schoolIdx];
+    // Officer must match the password of ANY one of their clubs
+    // (if they're in multiple clubs all with different passwords, we check each)
+    const matchingClub = school.clubs.find(c => _foundClubs.includes(c.id) && c.password === pw);
+    if (!matchingClub) {
+      err.textContent = 'Incorrect club password. Try again.';
+      inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 400);
+      inp.value = ''; return;
+    }
+    launchApp(_schoolIdx, 'officer', { name: _foundUser.name, grade: _foundUser.grade, clubs: _foundClubs });
+
+  } else { // admin
+    if (_foundUser.password !== pw) {
+      err.textContent = 'Incorrect admin password. Try again.';
+      inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 400);
+      inp.value = ''; return;
+    }
+    launchApp(_schoolIdx, 'admin', { name: _foundUser.name });
+  }
+}
+
+function launchApp(schoolIdx, role, user) {
+  session = { schoolIdx, role, user, myClubIds: user.clubs || [], myRequests: [] };
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  buildSidebar();
+  navigate('dashboard');
+}
+
+// ═══════════════════════════════════════
+//  CREATE ACCOUNT
+// ═══════════════════════════════════════
+let _caRole = null, _caNewUser = null;
+
+function showCreateAccount() {
+  _caRole = null; _caNewUser = null;
+  showStep('step-ca-type');
+}
+
+function selectSignupRole(role) {
+  _caRole = role;
+  const banner = document.getElementById('ca-role-banner');
+  if (role === 'member') {
+    banner.innerHTML = '<strong>👤 New Student Member</strong>Enter your name and grade to join as a member.';
+  } else {
+    banner.innerHTML = '<strong>⭐ Club Officer Account</strong>Already a member? You can upgrade to officer here. New to ClubTrackr? Enter your info and verify with your club\'s password.';
+  }
+  ['ca-first','ca-last'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ca-err').textContent = '';
+  showStep('step-ca-info');
+}
+
+function doCreateAccountInfo() {
+  const first = document.getElementById('ca-first').value.trim();
+  const last  = document.getElementById('ca-last').value.trim();
+  const grade = parseInt(document.getElementById('ca-grade').value);
+  const err   = document.getElementById('ca-err');
+  err.textContent = '';
+  if (!first || !last) { err.textContent = 'Please enter your full name.'; return; }
+  const fullName = first + ' ' + last;
+  const school = DATA.schools[_schoolIdx];
+
+  // Check if already an officer — block, just sign in
+  const alreadyOfficer = school.clubs.some(c => c.officers.some(o => o.name.toLowerCase() === fullName.toLowerCase()));
+  if (alreadyOfficer) { err.textContent = "You're already an officer. Sign in with the Officer option instead."; return; }
+
+  // Check if admin account
+  if (school.admins.some(a => a.name.toLowerCase() === fullName.toLowerCase())) {
+    err.textContent = 'That name belongs to an admin account.'; return;
+  }
+
+  // Check if already a member
+  const alreadyMember = school.clubs.some(c => c.members.some(m => m.name.toLowerCase() === fullName.toLowerCase()))
+    || (school.registeredMembers && school.registeredMembers.some(m => m.name.toLowerCase() === fullName.toLowerCase()));
+
+  if (_caRole === 'member' && alreadyMember) {
+    err.textContent = 'That name is already registered as a member. Sign in instead.'; return;
+  }
+
+  // Member upgrading to officer — reuse their existing record
+  if (_caRole === 'officer' && alreadyMember) {
+    let existing = null;
+    school.clubs.forEach(c => c.members.forEach(m => { if (m.name.toLowerCase() === fullName.toLowerCase()) existing = m; }));
+    if (!existing && school.registeredMembers) existing = school.registeredMembers.find(m => m.name.toLowerCase() === fullName.toLowerCase());
+    _caNewUser = { name: existing ? existing.name : fullName, grade: existing ? existing.grade : grade, upgradingFromMember: true };
+  } else {
+    _caNewUser = { name: fullName, grade };
+  }
+
+  if (_caRole === 'member') {
+    _caNewUser.clubs = [];
+    doFinalizeMemberAccount();
+  } else {
+    // Officer — show club picker
+    const clubSel = document.getElementById('ca-club-select');
+    clubSel.innerHTML = school.clubs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    document.getElementById('ca-club-pw').value = '';
+    document.getElementById('ca-club-err').textContent = '';
+    showStep('step-ca-club');
+  }
+}
+
+function doFinalizeMemberAccount() {
+  const school = DATA.schools[_schoolIdx];
+  // Add user to a virtual "registered users" list we store on the school
+  if (!school.registeredMembers) school.registeredMembers = [];
+  school.registeredMembers.push({ name: _caNewUser.name, grade: _caNewUser.grade });
+  saveData();
+
+  document.getElementById('ca-success-msg').textContent = `Welcome, ${_caNewUser.name.split(' ')[0]}!`;
+  document.getElementById('ca-success-sub').textContent = `Your member account is ready. You can now sign in and browse clubs.`;
+  showStep('step-ca-success');
+}
+
+function doCreateOfficerAccount() {
+  const clubId = parseInt(document.getElementById('ca-club-select').value);
+  const pw     = document.getElementById('ca-club-pw').value;
+  const err    = document.getElementById('ca-club-err');
+  const inp    = document.getElementById('ca-club-pw');
+  err.textContent = '';
+  const school = DATA.schools[_schoolIdx];
+  const club   = school.clubs.find(c => c.id === clubId);
+  if (!club) { err.textContent = 'Club not found.'; return; }
+  if (club.password !== pw) {
+    err.textContent = 'Incorrect club password. Please try again.';
+    inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 400);
+    inp.value = ''; return;
+  }
+  // Add to officers list (they stay in members list too if they were a member)
+  const alreadyOfficerOfThisClub = club.officers.some(o => o.name.toLowerCase() === _caNewUser.name.toLowerCase());
+  if (!alreadyOfficerOfThisClub) {
+    club.officers.push({ name: _caNewUser.name, grade: _caNewUser.grade });
+  }
+  _caNewUser.clubs = [clubId];
+  saveData();
+  const upgradeNote = _caNewUser.upgradingFromMember
+    ? `You've been promoted from Member to Officer of ${club.name}!`
+    : `You're now an officer of ${club.name}. Sign in to get started.`;
+  document.getElementById('ca-success-msg').textContent = `Welcome${_caNewUser.upgradingFromMember ? ' back' : ''}, ${_caNewUser.name.split(' ')[0]}!`;
+  document.getElementById('ca-success-sub').textContent = upgradeNote;
+  showStep('step-ca-success');
+}
+
+function doSignInAfterCreate() {
+  // Pre-fill name and role and sign in directly
+  const school = DATA.schools[_schoolIdx];
+  if (_caRole === 'member') {
+    // Find in registeredMembers
+    const reg = school.registeredMembers && school.registeredMembers.find(m => m.name === _caNewUser.name);
+    launchApp(_schoolIdx, 'member', { name: _caNewUser.name, grade: _caNewUser.grade, clubs: [] });
+  } else {
+    // Officer — already added to club
+    launchApp(_schoolIdx, 'officer', { name: _caNewUser.name, grade: _caNewUser.grade, clubs: _caNewUser.clubs });
+  }
+}
+
+function logout() {
+  session = { schoolIdx:null, role:null, user:null, myClubIds:[], myRequests:[] };
+  _foundUser = null; _foundClubs = []; _caRole = null; _caNewUser = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('li-first').value = '';
+  document.getElementById('li-last').value  = '';
+  document.getElementById('li-pw').value    = '';
+  document.getElementById('login-err').textContent = '';
+  document.getElementById('pw-err').textContent = '';
+  showStep('step-school');
+}
+
+// ═══════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════
+function buildSidebar() {
+  const school = DATA.schools[session.schoolIdx];
+  document.getElementById('sidebar-school-tag').innerHTML = `<strong>${school.name}</strong>`;
+  document.getElementById('sidebar-user').textContent = session.user.name + (session.user.grade ? ` · Gr ${session.user.grade}` : '');
+
+  let items = [];
+  if (session.role === 'member' || session.role === 'officer') {
+    items = [
+      {id:'dashboard',    icon:'🏠', label:'Dashboard'},
+      {id:'my-clubs',     icon:'🏛️', label:'My Clubs'},
+      {id:'browse-clubs', icon:'🔍', label:'Browse Clubs'},
+      {id:'my-requests',  icon:'📬', label:'My Requests', badge:true},
+    ];
+    if (session.role === 'officer') {
+      items.push({id:'fundraisers', icon:'🎪', label:'Fundraisers'});
+      items.push({id:'members',     icon:'👥', label:'Members'});
+    }
+  } else {
+    items = [
+      {id:'dashboard',            icon:'🏠', label:'Dashboard'},
+      {id:'admin-clubs',          icon:'🏛️', label:'All Clubs'},
+      {id:'admin-members',        icon:'👥', label:'Members'},
+      {id:'admin-fundraisers',    icon:'🎪', label:'Fundraiser Requests', badge:true},
+      {id:'admin-club-requests',  icon:'📋', label:'Club Requests',       badge:true},
+      {id:'admin-strikes',        icon:'⚡', label:'Strikes'},
+    ];
+  }
+
+  document.getElementById('sidebar-nav').innerHTML = items.map(item => `
+    <button class="nav-item" id="nav-${item.id}" onclick="navigate('${item.id}')">
+      <span class="icon">${item.icon}</span>${item.label}
+      ${item.badge ? `<span class="nav-badge" id="badge-${item.id}" style="display:none">0</span>` : ''}
+    </button>`).join('');
+  const resetBtn = document.getElementById('admin-reset-btn');
+  if (resetBtn) resetBtn.style.display = session.role === 'admin' ? 'block' : 'none';
+  updateBadges();
+}
+
+function updateBadges() {
+  const school = DATA.schools[session.schoolIdx];
+  setBadge('my-requests',       session.myRequests.filter(r=>r.status==='pending').length);
+  setBadge('admin-fundraisers', school.pendingFundraisers.length);
+  setBadge('admin-club-requests', school.pendingClubs.length);
+}
+function setBadge(id, n) {
+  const el = document.getElementById('badge-'+id);
+  if (!el) return;
+  el.textContent = n; el.style.display = n > 0 ? '' : 'none';
+}
+
+// ═══════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════
+function navigate(page) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-'+page);
+  if (nb) nb.classList.add('active');
+  const renders = {
+    'dashboard':           renderDashboard,
+    'my-clubs':            renderMyClubs,
+    'browse-clubs':        renderBrowseClubs,
+    'my-requests':         renderMyRequests,
+    'fundraisers':         renderOfficerFundraisers,
+    'members':             renderOfficerMembers,
+    'admin-clubs':         renderAdminClubs,
+    'admin-members':       renderAdminMembers,
+    'admin-fundraisers':   renderAdminFundraisers,
+    'admin-club-requests': renderAdminClubRequests,
+    'admin-strikes':       renderAdminStrikes,
+  };
+  if (renders[page]) renders[page]();
+  updateBadges();
+}
+
+// ═══════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════
+function getSchool()  { return DATA.schools[session.schoolIdx]; }
+function getMyClubs() { return getSchool().clubs.filter(c => session.myClubIds.includes(c.id)); }
+function cap(s)       { return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+function timeAgo(ts)  {
+  const d = Date.now()-ts;
+  if(d<60000)return 'just now';
+  if(d<3600000)return Math.floor(d/60000)+'m ago';
+  if(d<86400000)return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+}
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+
+// ═══════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════
+function renderDashboard() {
+  const school   = getSchool();
+  const myClubs  = getMyClubs();
+  const isAdmin  = session.role === 'admin';
+  const totalMem = school.clubs.reduce((a,c)=>a+c.members.length,0);
+
+  let statsHtml = isAdmin
+    ? `<div class="stat-card"><div class="stat-num">${school.clubs.length}</div><div class="stat-label">Active Clubs</div><div class="stat-sub">at ${school.name.split(' ').slice(0,2).join(' ')}</div></div>
+       <div class="stat-card"><div class="stat-num">${totalMem}</div><div class="stat-label">Total Members</div><div class="stat-sub">across all clubs</div></div>
+       <div class="stat-card"><div class="stat-num">${school.pendingClubs.length+school.pendingFundraisers.length}</div><div class="stat-label">Pending Requests</div><div class="stat-sub">awaiting your review</div></div>`
+    : `<div class="stat-card"><div class="stat-num">${myClubs.length}</div><div class="stat-label">My Clubs</div><div class="stat-sub">active memberships</div></div>
+       <div class="stat-card"><div class="stat-num">${myClubs.reduce((a,c)=>a+c.fundraisers.length,0)}</div><div class="stat-label">Fundraisers</div><div class="stat-sub">across my clubs</div></div>
+       <div class="stat-card"><div class="stat-num">${session.myRequests.filter(r=>r.status==='pending').length}</div><div class="stat-label">Pending Requests</div><div class="stat-sub">awaiting admin review</div></div>`;
+
+  const upClubs = isAdmin ? school.clubs : myClubs;
+  const allFund = upClubs.flatMap(c => c.fundraisers.map(f=>({...f,clubName:c.name})));
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">${school.name}</div>
+      <div class="page-title">Welcome back, <em>${session.user.name.split(' ')[0]}</em></div>
+      <div class="page-sub">Here's an overview of your club activity</div>
+    </div>
+    <div class="grid-3" style="margin-bottom:32px">${statsHtml}</div>
+    <div class="section-title">Upcoming Fundraisers</div>
+    ${allFund.length ? allFund.map(f=>`
+      <div class="fund-card">
+        <div class="fund-name">${f.name} <span style="font-size:0.73rem;color:var(--ink3);font-weight:400">· ${f.clubName}</span></div>
+        <div class="fund-meta">${f.date} · ${f.desc} · Profit: $${f.raised-f.expenses}</div>
+      </div>`).join('') : `<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No upcoming fundraisers</div></div>`}`;
+}
+
+// ═══════════════════════════════════════
+//  MY CLUBS
+// ═══════════════════════════════════════
+function renderMyClubs() {
+  const myClubs = getMyClubs();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">${cap(session.role)} Portal</div>
+      <div class="page-title">My <em>Clubs</em></div>
+      <div class="page-sub">View meeting details, fundraisers, and more</div>
+      <div class="page-actions"><button class="btn btn-green" onclick="openModal('modal-new-club')">＋ Request New Club</button></div>
+    </div>
+    <div class="grid-3">${myClubs.length
+      ? myClubs.map(c=>clubCard(c)).join('')
+      : `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🏛️</div><div class="empty-text">You haven't joined any clubs yet</div></div>`
+    }</div>`;
+}
+
+// ═══════════════════════════════════════
+//  BROWSE CLUBS
+// ═══════════════════════════════════════
+function renderBrowseClubs() {
+  const school = getSchool();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">${school.name}</div>
+      <div class="page-title">Browse <em>Clubs</em></div>
+      <div class="page-sub">All clubs at your school — click Join to become a member instantly</div>
+    </div>
+    ${school.clubs.length ? school.clubs.map(c => {
+      const isMine = session.myClubIds.includes(c.id);
+      const isOfficer = c.officers.some(o => o.name === session.user.name);
+      const isMember = c.members.some(m => m.name === session.user.name);
+      return `<div class="card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--ink);margin-bottom:3px">
+              ${c.name}
+              ${isMine && !isOfficer ? `<span style="font-size:0.72rem;font-family:'Outfit';background:var(--green3);color:var(--green);border-radius:20px;padding:2px 9px;vertical-align:middle;font-weight:600">✓ Joined</span>` : ''}
+              ${isOfficer ? `<span style="font-size:0.72rem;font-family:'Outfit';background:var(--brass3);color:var(--brass);border-radius:20px;padding:2px 9px;vertical-align:middle;font-weight:600">⭐ Your Club</span>` : ''}
+              ${isMember && !isOfficer ? `<span style="font-size:0.72rem;font-family:'Outfit';background:var(--green3);color:var(--green);border-radius:20px;padding:2px 9px;vertical-align:middle;font-weight:600">✓ Member</span>` : ''}
+            </div>
+            <div style="font-size:0.78rem;color:var(--ink3)">📍 ${c.room} &nbsp;·&nbsp; 🗓️ ${c.day}s ${c.freq}${c.time ? ' · 🕐 '+c.time : ''}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+            <span style="font-size:0.75rem;color:var(--ink3)">${c.members.length} member${c.members.length!==1?'s':''}</span>
+            ${c.strikes>0?`<span class="badge badge-strike">⚡ ${c.strikes}</span>`:''}
+            ${isOfficer ? ''
+              : isMember
+                ? `<button class="btn btn-red btn-sm" onclick="leaveClub(${c.id})">Leave</button>`
+                : `<button class="btn btn-green btn-sm" onclick="joinClub(${c.id})">＋ Join${session.role==='officer' ? ' as Member' : ''}</button>`}
+          </div>
+        </div>
+        ${c.advisor ? `<div style="font-size:0.76rem;color:var(--brass);margin-bottom:10px">🎓 ${c.advisor}</div>` : ''}
+        <div style="font-size:0.7rem;letter-spacing:0.09em;text-transform:uppercase;color:var(--brass);font-weight:600;margin-bottom:7px">⭐ Officers</div>
+        ${c.officers.length
+          ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">${c.officers.map(o=>`
+              <div style="display:flex;align-items:center;gap:7px;background:var(--brass3);border:1px solid rgba(181,135,42,0.18);border-radius:7px;padding:6px 11px">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--brass2);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:0.9rem;font-weight:700;color:#fff;flex-shrink:0">${o.name[0]}</div>
+                <div><div style="font-size:0.82rem;font-weight:500;color:var(--ink)">${o.name}</div><div style="font-size:0.7rem;color:var(--ink3)">Gr ${o.grade}</div></div>
+              </div>`).join('')}</div>`
+          : `<p style="font-size:0.8rem;color:var(--ink3);font-style:italic;margin-bottom:10px">No officers listed yet</p>`}
+        <button class="btn btn-outline btn-sm" onclick="openClubDetail(${c.id})">View full details →</button>
+      </div>`;
+    }).join('')
+    : `<div class="empty"><div class="empty-icon">🏛️</div><div class="empty-text">No clubs at your school yet</div></div>`}`;
+}
+
+function joinClub(clubId) {
+  const school = getSchool();
+  const club = school.clubs.find(c => c.id === clubId);
+  if (!club) return;
+  const alreadyMember = club.members.some(m => m.name === session.user.name);
+  if (alreadyMember) return;
+  club.members.push({ name: session.user.name, grade: session.user.grade || 11 });
+  if (!session.myClubIds.includes(clubId)) session.myClubIds.push(clubId);
+  saveData();
+  toast(`🎉 You joined ${club.name}!`);
+  renderBrowseClubs();
+}
+
+function leaveClub(clubId) {
+  const school = getSchool();
+  const club = school.clubs.find(c => c.id === clubId);
+  if (!club) return;
+  // Only remove from members list — officers keep their officer role
+  club.members = club.members.filter(m => m.name !== session.user.name);
+  const isOfficer = club.officers.some(o => o.name === session.user.name);
+  if (!isOfficer) session.myClubIds = session.myClubIds.filter(id => id !== clubId);
+  saveData();
+  toast(`👋 You left ${club.name}`);
+  renderBrowseClubs();
+}
+
+
+function clubCard(c) {
+  return `<div class="club-card" onclick="openClubDetail(${c.id})">
+    <div class="club-card-banner"></div>
+    <div class="club-card-body">
+      <div class="club-card-name">${c.name}</div>
+      <div class="club-card-meta">📍 ${c.room} &nbsp;·&nbsp; 🗓️ ${c.day}s ${c.freq}${c.time ? ' · 🕐 '+c.time : ''}</div>
+      ${c.officers.length ? `<div style="font-size:0.73rem;color:var(--brass);margin-bottom:10px">⭐ ${c.officers.map(o=>o.name.split(' ')[0]).join(', ')}</div>` : ''}
+      <div class="club-card-row">
+        <div class="club-mini-stat"><div class="club-mini-num">${c.officers.length}</div><div class="club-mini-label">Officers</div></div>
+        <div class="club-mini-stat"><div class="club-mini-num">${c.members.length}</div><div class="club-mini-label">Members</div></div>
+        <div class="club-mini-stat"><div class="club-mini-num">${c.fundraisers.length}</div><div class="club-mini-label">Events</div></div>
+        ${session.role==='officer' && session.myClubIds.includes(c.id) ? `<div class="club-mini-stat"><div class="club-mini-num">$${c.balance}</div><div class="club-mini-label">Balance</div></div>` : ''}
+        ${c.strikes>0?`<div class="club-mini-stat"><div class="club-mini-num" style="color:var(--red)">${c.strikes}</div><div class="club-mini-label">Strikes</div></div>`:''}
+      </div>
+      <div style="font-size:0.75rem;color:var(--green);font-weight:500">View Details →</div>
+    </div>
+  </div>`;
+}
+
+function openClubDetail(id) {
+  const c = DATA.schools.flatMap(s=>s.clubs).find(x=>x.id===id);
+  document.getElementById('club-detail-body').innerHTML = `
+    <div class="modal-title">${c.name}</div>
+    <div class="modal-sub">📍 ${c.room} &nbsp;·&nbsp; Meets ${c.freq} on ${c.day}s${c.time ? ' · '+c.time : ''}</div>
+    ${c.advisor ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:8px 12px;background:var(--brass3);border:1px solid rgba(181,135,42,0.2);border-radius:7px;font-size:0.8rem"><span>🎓</span><div><strong style="color:var(--ink2)">${c.advisor}</strong>${c.advisorEmail?`<span style="color:var(--ink3);margin-left:6px">· ${c.advisorEmail}</span>`:''}</div></div>` : ''}
+    <div class="section-title">Officers <span style="font-size:0.78rem;font-family:'Outfit';font-weight:400;color:var(--ink3)">${c.officers.length} officer${c.officers.length!==1?'s':''}</span></div>
+    ${c.officers.length
+      ? c.officers.map(o=>`<div class="row-item"><div class="avatar" style="background:var(--brass3);color:var(--brass)">${o.name[0]}</div><div class="row-info"><div class="row-name">${o.name}</div><div class="row-sub">Grade ${o.grade} · Club Officer</div></div><span class="badge badge-officer">⭐ Officer</span></div>`).join('')
+      : `<p style="font-size:0.84rem;color:var(--ink3);padding:8px">No officers listed</p>`}
+    <div class="section-title" style="margin-top:18px">Members <span style="font-size:0.78rem;font-family:'Outfit';font-weight:400;color:var(--ink3)">${c.members.length} member${c.members.length!==1?'s':''}</span></div>
+    ${c.members.length ? c.members.map(m=>`<div class="row-item"><div class="avatar">${m.name[0]}</div><div class="row-info"><div class="row-name">${m.name}</div><div class="row-sub">Grade ${m.grade}</div></div><span class="badge badge-member">Member</span></div>`).join('') : `<p style="font-size:0.84rem;color:var(--ink3);padding:8px">No members yet</p>`}
+    <div class="section-title" style="margin-top:18px">Fundraisers</div>
+    ${c.fundraisers.length ? c.fundraisers.map(f=>`<div class="fund-card"><div class="fund-name">${f.name}</div><div class="fund-meta">${f.date} · ${f.desc} · Profit: $${f.raised-f.expenses}</div></div>`).join('') : `<p style="font-size:0.84rem;color:var(--ink3);padding:8px">No fundraisers on record</p>`}
+    ${session.role==='officer' && session.myClubIds.includes(c.id) ? `<div class="divider"></div><div class="section-title">Bank Account</div><div class="stat-card" style="display:inline-block;padding:16px 24px"><div class="stat-num">$${c.balance}</div><div class="stat-label">Current Balance</div></div>` : ''}`;
+  openModal('modal-club-detail');
+}
+
+// ═══════════════════════════════════════
+//  MY REQUESTS
+// ═══════════════════════════════════════
+function renderMyRequests() {
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Status Tracker</div>
+      <div class="page-title">My <em>Requests</em></div>
+      <div class="page-sub">Track your club formation requests</div>
+      <div class="page-actions"><button class="btn btn-green" onclick="openModal('modal-new-club')">＋ New Request</button></div>
+    </div>
+    <div id="my-req-list">${session.myRequests.length
+      ? session.myRequests.map(r=>`
+        <div class="req-card">
+          <div class="req-card-top">
+            <div><div class="req-card-title">${r.clubName}</div><div class="req-card-meta">Submitted ${timeAgo(r.ts)} · ${r.room} · ${r.day}s · ${r.freq}${r.time ? ' · '+r.time : ''}</div></div>
+            <span class="badge badge-${r.status}">${cap(r.status)}</span>
+          </div>
+          <div class="req-card-desc">${r.desc}</div>
+          <div class="req-card-reason">"${r.reason}"</div>
+          ${r.advisor ? `<div style="font-size:0.78rem;color:var(--brass);margin-bottom:8px">🎓 Advisor: <strong>${r.advisor}</strong>${r.advisorEmail?' · '+r.advisorEmail:''}</div>` : ''}
+          ${r.status==='approved'?`<div style="font-size:0.8rem;color:var(--green)">✓ Approved — check My Clubs!</div>`:''}
+          ${r.status==='denied'?`<div style="font-size:0.8rem;color:var(--red)">✕ Request was denied by admin</div>`:''}
+        </div>`).join('')
+      : `<div class="empty"><div class="empty-icon">📬</div><div class="empty-text">No requests yet.<br>Propose a new club above!</div></div>`
+    }</div>`;
+}
+
+// ═══════════════════════════════════════
+//  OFFICER: FUNDRAISERS
+// ═══════════════════════════════════════
+function renderOfficerFundraisers() {
+  const myClubs = getMyClubs();
+  const school  = getSchool();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Officer Tools</div>
+      <div class="page-title">Fundraiser <em>Management</em></div>
+      <div class="page-sub">View past fundraisers and submit new requests</div>
+      <div class="page-actions"><button class="btn btn-green" onclick="openFundraiserRequest()">＋ Request Fundraiser</button></div>
+    </div>
+    ${myClubs.map(c=>`
+      <div class="section-title">${c.name}</div>
+      ${c.fundraisers.length ? c.fundraisers.map(f=>`
+        <div class="fund-card"><div class="fund-name">${f.name} <span style="font-size:0.73rem;font-weight:400;color:var(--ink3)">· ${f.date}</span></div>
+        <div class="fund-meta">${f.desc} · Raised: $${f.raised} · Expenses: $${f.expenses} · <strong>Profit: $${f.raised-f.expenses}</strong></div></div>`).join('')
+        : `<p style="font-size:0.84rem;color:var(--ink3);margin-bottom:20px;padding:8px">No fundraisers on record</p>`}
+    `).join('')}
+    <div class="section-title" style="margin-top:8px">Pending School Approval</div>
+    ${school.pendingFundraisers.filter(f=>session.myClubIds.includes(f.clubId)).length
+      ? school.pendingFundraisers.filter(f=>session.myClubIds.includes(f.clubId)).map(f=>`
+          <div class="req-card"><div class="req-card-top"><div class="req-card-title">${f.name}</div><span class="badge badge-pending">Pending</span></div>
+          <div class="req-card-meta">${f.clubName} · ${f.date}</div><div class="req-card-desc">${f.desc}</div></div>`).join('')
+      : `<p style="font-size:0.84rem;color:var(--ink3);padding:8px">No pending fundraiser requests</p>`}`;
+}
+
+function openFundraiserRequest() {
+  const myClubs = getMyClubs();
+  const opts = myClubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  const el = document.createElement('div');
+  el.className = 'overlay open'; el.id = 'modal-fund-req'; el.style.position='fixed';
+  el.innerHTML = `<div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal-fund-req').remove()">✕</button>
+    <div class="modal-title">Request a Fundraiser</div>
+    <div class="modal-sub">Admin will review and approve your request</div>
+    <div class="form-group"><label>Club</label><select id="fr-club">${opts}</select></div>
+    <div class="form-group"><label>Fundraiser Name</label><input id="fr-name" placeholder="e.g. Bake Sale"></div>
+    <div class="form-group"><label>Description</label><textarea id="fr-desc"></textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Month</label><input id="fr-month" placeholder="April"></div>
+      <div class="form-group"><label>Day</label><input id="fr-day" type="number" placeholder="15"></div>
+    </div>
+    <div class="form-group"><label>Year</label><input id="fr-year" type="number" value="2026"></div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-green" onclick="submitFundraiserRequest()">Submit</button>
+      <button class="btn btn-outline" onclick="document.getElementById('modal-fund-req').remove()">Cancel</button>
+    </div>
+  </div>`;
+  el.addEventListener('click', e => { if(e.target===el) el.remove(); });
+  document.body.appendChild(el);
+}
+
+function submitFundraiserRequest() {
+  const school  = getSchool();
+  const clubId  = parseInt(document.getElementById('fr-club').value);
+  const club    = school.clubs.find(c=>c.id===clubId);
+  const req = {
+    clubId, clubName: club.name,
+    name: document.getElementById('fr-name').value.trim(),
+    desc: document.getElementById('fr-desc').value.trim(),
+    date: document.getElementById('fr-month').value + ' ' + document.getElementById('fr-day').value + ', ' + document.getElementById('fr-year').value,
+    raised:0, expenses:0
+  };
+  if (!req.name) { toast('Please enter a fundraiser name'); return; }
+  school.pendingFundraisers.push(req);
+  saveData();
+  document.getElementById('modal-fund-req')?.remove();
+  toast('🎪 Fundraiser request submitted!');
+  updateBadges(); renderOfficerFundraisers();
+}
+
+// ═══════════════════════════════════════
+//  OFFICER: MEMBERS
+// ═══════════════════════════════════════
+function renderOfficerMembers() {
+  const myClubs = getMyClubs();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Officer Tools</div>
+      <div class="page-title">Club <em>Members</em></div>
+      <div class="page-sub">View all officers and members across your clubs</div>
+    </div>
+    ${myClubs.map(c=>`
+      <div class="section-title">${c.name}</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--brass);margin-bottom:8px;font-weight:600">⭐ Officers (${c.officers.length})</div>
+        ${c.officers.length ? c.officers.map(o=>`<div class="row-item"><div class="avatar" style="background:var(--brass3);color:var(--brass)">${o.name[0]}</div><div class="row-info"><div class="row-name">${o.name}</div><div class="row-sub">Grade ${o.grade}</div></div><span class="badge badge-officer">Officer</span></div>`).join('') : `<p style="font-size:0.84rem;color:var(--ink3);padding:8px 0 4px">No officers listed</p>`}
+      </div>
+      <div style="margin-bottom:24px">
+        <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;font-weight:600">👤 Members (${c.members.length})</div>
+        ${c.members.length ? c.members.map(m=>`<div class="row-item"><div class="avatar">${m.name[0]}</div><div class="row-info"><div class="row-name">${m.name}</div><div class="row-sub">Grade ${m.grade}</div></div><span class="badge badge-member">Member</span></div>`).join('') : `<p style="font-size:0.84rem;color:var(--ink3);padding:8px 0">No members yet</p>`}
+      </div>`).join('')}`;
+}
+
+// ═══════════════════════════════════════
+//  ADMIN: ALL CLUBS
+// ═══════════════════════════════════════
+function renderAdminClubs() {
+  const school = getSchool();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Administration</div>
+      <div class="page-title">All <em>Clubs</em></div>
+      <div class="page-sub">View and manage every club at ${school.name}</div>
+    </div>
+    <div class="grid-3">${school.clubs.map(c=>adminClubCard(c)).join('')}</div>`;
+}
+
+function adminClubCard(c) {
+  return `<div class="club-card" onclick="openClubDetailAdmin(${c.id})">
+    <div class="club-card-banner"></div>
+    <div class="club-card-body">
+      <div class="club-card-name">${c.name}</div>
+      <div class="club-card-meta">📍 ${c.room} &nbsp;·&nbsp; ${c.day}s ${c.freq}</div>
+      <div class="club-card-row">
+        <div class="club-mini-stat"><div class="club-mini-num">${c.members.length}</div><div class="club-mini-label">Members</div></div>
+        <div class="club-mini-stat"><div class="club-mini-num">$${c.balance}</div><div class="club-mini-label">Balance</div></div>
+        <div class="club-mini-stat"><div class="${c.strikes>0?'club-mini-num':'club-mini-num'}" style="${c.strikes>0?'color:var(--red)':''}"><span class="${c.strikes>0?'badge badge-strike':''}">${c.strikes}</span></div><div class="club-mini-label">Strikes</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openClubDetailAdmin(id) {
+  openClubDetail(id);
+  document.getElementById('club-detail-body').innerHTML += `
+    <div class="divider"></div>
+    <div class="section-title">Admin Controls</div>
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="editClubRoom(${id})">✏️ Edit Room</button>
+      <button class="btn btn-red btn-sm" onclick="addStrike(${id})">⚡ Add Strike</button>
+    </div>`;
+}
+
+function editClubRoom(id) {
+  const c = getSchool().clubs.find(x=>x.id===id);
+  const r = prompt(`New room for ${c.name} (current: ${c.room})`);
+  if (r) { c.room = r; saveData(); toast('✏️ Room updated'); closeModal('modal-club-detail'); renderAdminClubs(); }
+}
+function addStrike(id) {
+  const c = getSchool().clubs.find(x=>x.id===id);
+  c.strikes++; saveData(); toast(`⚡ Strike added. ${c.name} now has ${c.strikes} strike(s).`);
+  closeModal('modal-club-detail'); renderAdminClubs();
+}
+
+// ═══════════════════════════════════════
+//  ADMIN: MEMBERS
+// ═══════════════════════════════════════
+function renderAdminMembers() {
+  const school = getSchool();
+  const all = {};
+  school.clubs.forEach(c => {
+    c.members.forEach(m => {
+      if (!all[m.name]) all[m.name] = {...m, clubs:[], role:'member'};
+      all[m.name].clubs.push(c.name);
+    });
+    c.officers.forEach(o => {
+      if (!all[o.name]) all[o.name] = {...o, clubs:[], role:'officer'};
+      else all[o.name].role = 'officer';
+      all[o.name].clubs.push(c.name+' (Officer)');
+    });
+  });
+  const list = Object.values(all);
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Administration</div>
+      <div class="page-title">All <em>Members</em></div>
+      <div class="page-sub">${list.length} people enrolled at ${school.name}</div>
+    </div>
+    ${list.map(m=>`<div class="row-item"><div class="avatar">${m.name[0]}</div><div class="row-info"><div class="row-name">${m.name}</div><div class="row-sub">Grade ${m.grade} · ${m.clubs.join(', ')}</div></div><span class="badge badge-${m.role}">${cap(m.role)}</span></div>`).join('')}`;
+}
+
+// ═══════════════════════════════════════
+//  ADMIN: FUNDRAISER REQUESTS
+// ═══════════════════════════════════════
+function renderAdminFundraisers() {
+  const school = getSchool();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Administration</div>
+      <div class="page-title">Fundraiser <em>Requests</em></div>
+      <div class="page-sub">Review and approve officer proposals</div>
+    </div>
+    <div id="fund-req-list">${school.pendingFundraisers.length
+      ? school.pendingFundraisers.map((f,i)=>`
+          <div class="req-card">
+            <div class="req-card-top"><div><div class="req-card-title">${f.name}</div><div class="req-card-meta">${f.clubName} · ${f.date}</div></div><span class="badge badge-pending">Pending</span></div>
+            <div class="req-card-desc">${f.desc}</div>
+            <div class="btn-row">
+              <button class="btn btn-success btn-sm" onclick="decideFundraiser(${i},'approve')">✓ Approve</button>
+              <button class="btn btn-red btn-sm" onclick="decideFundraiser(${i},'deny')">✕ Deny</button>
+            </div>
+          </div>`).join('')
+      : `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No pending fundraiser requests</div></div>`
+    }</div>`;
+}
+
+function decideFundraiser(i, decision) {
+  const school = getSchool();
+  const f = school.pendingFundraisers[i];
+  if (decision === 'approve') {
+    const club = school.clubs.find(c=>c.id===f.clubId);
+    if (club) club.fundraisers.push({name:f.name,desc:f.desc,date:f.date,raised:0,expenses:0});
+    toast(`✓ "${f.name}" approved`);
+  } else { toast(`✕ "${f.name}" denied`); }
+  school.pendingFundraisers.splice(i,1);
+  saveData();
+  updateBadges(); renderAdminFundraisers();
+}
+
+// ═══════════════════════════════════════
+//  ADMIN: CLUB REQUESTS
+// ═══════════════════════════════════════
+function renderAdminClubRequests() {
+  const school  = getSchool();
+  const pending = school.pendingClubs.filter(r=>r.status==='pending');
+  const reviewed= school.pendingClubs.filter(r=>r.status!=='pending');
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Administration</div>
+      <div class="page-title">Club Formation <em>Requests</em></div>
+      <div class="page-sub">Review proposals from members and officers</div>
+    </div>
+    ${pending.length ? `<div class="section-title">Pending Review <span class="badge badge-pending" style="margin-left:8px">${pending.length}</span></div>`+pending.map(r=>adminClubReqCard(r,false)).join('') : ''}
+    ${reviewed.length ? `<div class="divider"></div><div class="section-title">Reviewed</div>`+reviewed.map(r=>adminClubReqCard(r,true)).join('') : ''}
+    ${!school.pendingClubs.length ? `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No club requests at this time</div></div>` : ''}`;
+}
+
+function adminClubReqCard(r, reviewed) {
+  return `<div class="req-card">
+    <div class="req-card-top">
+      <div><div class="req-card-title">${r.clubName}</div>
+      <div class="req-card-meta">By <strong>${r.requesterName}</strong> (${cap(r.requesterRole)}) · ${timeAgo(r.ts)} · ${r.room} · ${r.day}s · ${r.freq}${r.time ? ' · '+r.time : ''}</div></div>
+      <span class="badge badge-${r.status}">${cap(r.status)}</span>
+    </div>
+    <div class="req-card-desc">${r.desc}</div>
+    <div class="req-card-reason">"${r.reason}"</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--brass3);border:1px solid rgba(181,135,42,0.2);border-radius:7px;font-size:0.8rem">
+      <span style="font-size:1rem">🎓</span>
+      <div><strong style="color:var(--ink2)">${r.advisor || 'No advisor listed'}</strong>${r.advisorEmail ? `<span style="color:var(--ink3);margin-left:6px">· ${r.advisorEmail}</span>` : ''}</div>
+    </div>
+    ${!reviewed ? `<div class="btn-row">
+      <button class="btn btn-success btn-sm" onclick="decideClubRequest('${r.id}','approved')">✓ Approve</button>
+      <button class="btn btn-red btn-sm" onclick="decideClubRequest('${r.id}','denied')">✕ Deny</button>
+    </div>` : `<div style="font-size:0.8rem;color:${r.status==='approved'?'var(--green)':'var(--red)'}">
+      ${r.status==='approved'?'✓ Approved — Club created':'✕ Denied'}
+    </div>`}
+  </div>`;
+}
+
+function decideClubRequest(id, decision) {
+  const school = getSchool();
+  const req = school.pendingClubs.find(r=>r.id===id);
+  req.status = decision;
+  if (decision === 'approved') {
+    const newId = Date.now();
+    school.clubs.push({ id:newId, name:req.clubName, room:req.room, day:req.day, freq:req.freq, time:req.time||'',
+      password:req.password, advisor:req.advisor||'', advisorEmail:req.advisorEmail||'',
+      balance:0, strikes:0, members:[], officers:[], fundraisers:[] });
+    const myR = session.myRequests.find(r=>r.id===id);
+    if (myR) { myR.status='approved'; session.myClubIds.push(newId); }
+    toast(`✓ "${req.clubName}" approved and created!`);
+  } else {
+    const myR = session.myRequests.find(r=>r.id===id);
+    if (myR) myR.status = 'denied';
+    toast(`✕ "${req.clubName}" denied`);
+  }
+  updateBadges(); saveData(); renderAdminClubRequests();
+}
+
+// ═══════════════════════════════════════
+//  ADMIN: STRIKES
+// ═══════════════════════════════════════
+function renderAdminStrikes() {
+  const school = getSchool();
+  document.getElementById('main-content').innerHTML = `
+    <div class="page-head">
+      <div class="page-eyebrow">Administration</div>
+      <div class="page-title">Club <em>Strikes</em></div>
+      <div class="page-sub">Monitor and manage strike counts</div>
+    </div>
+    ${school.clubs.map(c=>`
+      <div class="row-item">
+        <div class="avatar" style="background:${c.strikes>0?'var(--red3)':'var(--green3)'};color:${c.strikes>0?'var(--red)':'var(--green)'}">⚡</div>
+        <div class="row-info"><div class="row-name">${c.name}</div><div class="row-sub">${c.room} · ${c.members.length} members</div></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${c.strikes>0?'badge-strike':'badge-approved'}">${c.strikes} strike${c.strikes!==1?'s':''}</span>
+          <button class="btn btn-red btn-sm" onclick="adminSetStrike(${c.id},${c.strikes+1})">+1</button>
+          ${c.strikes>0?`<button class="btn btn-success btn-sm" onclick="adminSetStrike(${c.id},${Math.max(0,c.strikes-1)})">-1</button>`:''}
+        </div>
+      </div>`).join('')}`;
+}
+function adminSetStrike(id, n) {
+  const c = getSchool().clubs.find(x=>x.id===id);
+  c.strikes = n; saveData(); toast(`⚡ ${c.name} now has ${n} strike${n!==1?'s':''}`); renderAdminStrikes();
+}
+
+// ═══════════════════════════════════════
+//  CLUB REQUEST SUBMISSION
+// ═══════════════════════════════════════
+function submitClubRequest() {
+  const name   = document.getElementById('nc-name').value.trim();
+  const desc   = document.getElementById('nc-desc').value.trim();
+  const room   = document.getElementById('nc-room').value.trim();
+  const day    = document.getElementById('nc-day').value;
+  const freq   = document.getElementById('nc-freq').value;
+  const time   = document.getElementById('nc-time').value;
+  const pw     = document.getElementById('nc-pw').value.trim();
+  const reason = document.getElementById('nc-reason').value.trim();
+  const advisor      = document.getElementById('nc-advisor').value.trim();
+  const advisorEmail = document.getElementById('nc-advisor-email').value.trim();
+  if (!name || !desc) { toast('⚠️ Club name and description are required'); return; }
+  if (!advisor) { toast('⚠️ A teacher advisor is required'); return; }
+  const req = {
+    id:'req_'+Date.now(), clubName:name, desc, room:room||'TBD',
+    day, freq, time, password:pw||'tbd', reason, advisor, advisorEmail,
+    status:'pending', requesterName:session.user.name, requesterRole:session.role, ts:Date.now()
+  };
+  getSchool().pendingClubs.push(req);
+  session.myRequests.push(req);
+  saveData();
+  closeModal('modal-new-club');
+  ['nc-name','nc-desc','nc-room','nc-pw','nc-reason','nc-advisor','nc-advisor-email'].forEach(id=>document.getElementById(id).value='');
+  toast('🎉 Club request submitted!');
+  updateBadges(); navigate('my-requests');
+}
+</script>
+</body>
+</html>
